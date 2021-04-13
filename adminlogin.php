@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Pop HTML5 Template</title>
+    <title>Counselling Assistant</title>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300">  <!-- Google web font "Open Sans" -->
     <link rel="stylesheet" href="css/bootstrap.min.css">                                  <!-- https://getbootstrap.com/ -->
@@ -20,12 +20,6 @@
 <body>
 <?php
 include("dbconnect.php");
-// echo $abc;
-// $con=mysqli_connect("localhost","root","","counselling");
-// if(mysqli_connect_errno($con))
-// {
-//     echo mysqli_connect_error();
-// }
 $con = Openconn();
 if(isset($_SESSION["user"]) &&  $_SESSION['loggedin'] == true)
 {
@@ -39,8 +33,9 @@ function getUser()
 
 if(isset($_POST["submit"]))
 {
-	//if($_POST["usertype"]==1)
-	$sql = "SELECT * FROM adminlogin WHERE UserName='$_POST[user]' AND Password ='$_POST[psw]'";
+    $users=$_POST["user"];
+    $psw=$_POST["psw"];
+	$sql = "SELECT * FROM adminlogin WHERE Username='$users'";
 
 	if(!$qsql = mysqli_query($con,$sql))
 	{
@@ -52,17 +47,25 @@ if(isset($_POST["submit"]))
 		{
 			session_start();
 			$rs = mysqli_fetch_array($qsql);
-			$_SESSION["user"] = $rs['Username'];
-            $_SESSION['loggedin'] = true;			
-			// $_SESSION["password"] = $rs['Password'];			
-			//$_SESSION["user_type"] = $rs[type];
-			// echo $_SESSION["user"];
-			header('Location: admin-index.php', true, 307);
-    }
+            $psww = $rs[1];
+            if(password_verify($psw, $psww))
+            {
+                $_SESSION["user"] = $rs['UserName'];
+                $_SESSION['loggedin'] = true;			
+			    $_SESSION["password"] = $rs['Password'];			
+			    //$_SESSION["user_type"] = $rs[type];
+			    //echo $_SESSION["user"];
+			    header('Location: admin-index.php', true, 307);
+            }
+            else 
+            {
+                echo "<script>alert('Wrong Password entered!')</script>";
+            }
+        }
 		else
 		{
             // echo $_SESSION["user"];
-			echo "<script>alert('Invalid Login ID and password entered...')</script>";	
+			echo "<script>alert('Username does not exist!')</script>";	
 		}
 	}
 }

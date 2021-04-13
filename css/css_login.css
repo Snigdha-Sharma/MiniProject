@@ -4,6 +4,11 @@
   font-family: Century Gothic;
 }
 
+.my_error {
+    color: red;
+    /* Other fancy things, to make it look really nice*/
+}
+
 table, th, td, tr {
   border: 1px solid white;
 }

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Pop HTML5 Template</title>
+    <title>Counselling Assistant</title>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300">  <!-- Google web font "Open Sans" -->
     <link rel="stylesheet" href="css/bootstrap.min.css">                                  <!-- https://getbootstrap.com/ -->
@@ -65,12 +65,12 @@
                 {
                     // echo $psw;
                     // session_destroy();
-                    header('location: http://localhost/index.php', true, 307);
+                    header('location: http://localhost/CounsellingAssistant/index.php', true, 307);
                     exit();
                 }
                 else
                 {
-                    header('location: http://localhost/login.php', true, 307);
+                    header('location: http://localhost/CounsellingAssistant/login.php', true, 307);
                     // echo "error in entering user details";
                     exit();
                 }

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Pop HTML5 Template</title>
+    <title>Counselling Assistant</title>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300">  <!-- Google web font "Open Sans" -->
     <link rel="stylesheet" href="css/bootstrap.min.css">                                  <!-- https://getbootstrap.com/ -->
@@ -56,31 +56,33 @@
             else
             {
                 // checking passwords
-                if($psw==$psw2 && $uniquekey=="MNNIT"){
-                    //   echo $psw;
-                $query="INSERT INTO adminlogin(UserName, Password) VALUES ('$user','$psw')";
-                // echo $query;
-                if(mysqli_query($con, $query))
+                if($psw==$psw2 && $uniquekey=="MNNIT")
                 {
-                    // echo $psw;
+                    //   echo $psw;
+                    $hashed_password = password_hash($psw, PASSWORD_DEFAULT);
+                    $query="INSERT INTO adminlogin(UserName, Password) VALUES ('$user','$hashed_password')";
+                    // echo $query;
+                    if(mysqli_query($con, $query))
+                    {
+                        // echo $psw;
+                        // session_destroy();
+                        $_SESSION["user"] = $user;
+                        $_SESSION['loggedin'] = true;
+                        header('location: http://localhost/CounsellingAssistant/admin-index.php', true, 307); 
+                        exit();
+                    }
+                    else
+                    {
+                        echo $user;
+                        echo $query;
                     // session_destroy();
-                    
-                    $_SESSION["user"] = $user;
-                    $_SESSION['loggedin'] = true;
-                    header('location: http://localhost/admin-index.php', true, 307); 
-                    exit();
+                    // header('location: http://localhost/CounsellingAssistant/adminsignup.php', true, 307);
+                    // echo $con;
+                    // exit();
+                    }
                 }
                 else
                 {
-                    echo $user;
-                    echo $query;
-                    // session_destroy();
-                    // header('location: http://localhost/adminsignup.php', true, 307);
-                    // echo $con;
-                    // exit();
-                }
-                }
-                else{
                     echo "Passwords do not match. Try again.";
                 }
             	// echo "<script>alert('Invalid Login ID and password entered...')</script>";	

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Pop HTML5 Template</title>
+    <title>Counselling Assistant</title>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300">  <!-- Google web font "Open Sans" -->
     <link rel="stylesheet" href="css/bootstrap.min.css">                                  <!-- https://getbootstrap.com/ -->
@@ -29,7 +29,7 @@
     }
     else{
         // echo "<script>alert('You need to login first.')</script>";
-        header('Location: login.php');
+        header('Location: adminlogin.php');
     }
 
     
@@ -47,7 +47,7 @@
     if(isset($_POST['logout'])) //button if clicked
     {
         session_destroy();
-        header('location: http://localhost/login.php', true, 307);
+        header('location: http://localhost/CounsellingAssistant/adminlogin.php', true, 307);
     }
     if(isset($_POST['refresh'])){
         $qsql = "SELECT * FROM userdetails WHERE username='$user'";
@@ -72,9 +72,6 @@
         }
         // echo $name;
     }
-    
-    // error_reporting(0);
-    // ini_set('display_errors', 0);
 ?>
 
 
@@ -88,10 +85,8 @@
                     
                     <div class="col-sm-12 col-md-6">
                         
-                        <h3><b>Hello Admin!</b></h3>
-                        After a lot of hussle and months of preparation, you are now finally free and ready to go to college.<br><br>
-                        You might be seeking some advice about choice filling.
-                        Let us help you to fill in your college preferences. Just fill in all the details, and you will be all set!
+                        <h3><b>Hello Admin <?php  echo $user;  ?>!</b></h3>
+                        Make sure to update the database and enter valid entries only!
                         <br><br>
                         <form method="POST"><button type="submit" name="logout" class="btn logout"><b>Logout</b></button></form>
 

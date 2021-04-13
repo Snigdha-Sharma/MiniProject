@@ -19,13 +19,8 @@
 
 <body>
 <?php
+
 include("dbconnect.php");
-// echo $abc;
-// $con=mysqli_connect("localhost","root","","counselling");
-// if(mysqli_connect_errno($con))
-// {
-//     echo mysqli_connect_error();
-// }
 $con = Openconn();
 if(isset($_SESSION["user"]) &&  $_SESSION['loggedin'] == true)
 {
@@ -39,11 +34,9 @@ if(isset($_SESSION["user"]) &&  $_SESSION['loggedin'] == true)
 
 if(isset($_POST["submit"]))
 {
-	//if($_POST["usertype"]==1)
     $users=$_POST["user"];
     $psw=$_POST["psw"];
-    // $hashed_password = password_hash($psw, PASSWORD_DEFAULT);
-	$sql = "SELECT * FROM userlogin WHERE Username='$users' and Password='$psw';";
+	$sql = "SELECT * FROM userlogin WHERE Username='$users'";
 
 	if(!$qsql = mysqli_query($con,$sql))
 	{
@@ -55,22 +48,26 @@ if(isset($_POST["submit"]))
 		{
 			session_start();
 			$rs = mysqli_fetch_array($qsql);
-            // $psww = $rs[0];
-
-            // if(psw_verify($psw, $hashed_password)){
-
-			$_SESSION["user"] = $rs['Username'];
-            $_SESSION['loggedin'] = true;			
-			// $_SESSION["password"] = $rs['Password'];			
-			//$_SESSION["user_type"] = $rs[type];
-			// echo $_SESSION["user"];
-			header('Location: index.php', true, 307);
-            // }
-    }
+            $psww = $rs[1];
+            //echo $rs[1];
+            if(password_verify($psw, $psww))
+            {
+                $_SESSION["user"] = $rs['Username'];
+                $_SESSION['loggedin'] = true;			
+			    $_SESSION["password"] = $rs['Password'];			
+			    //$_SESSION["user_type"] = $rs[type];
+			    //echo $_SESSION["user"];
+			    header('Location: index.php', true, 307);
+            }
+            else 
+            {
+                echo "<script>alert('Wrong Password entered!')</script>";
+            }
+        }
 		else
 		{
-            // echo $_SESSION["user"];
-			echo "<script>alert('Invalid Login ID and password entered...')</script>";	
+            //echo $_SESSION["user"];
+			echo "<script>alert('Username does not exist!')</script>";	
 		}
 	}
 }

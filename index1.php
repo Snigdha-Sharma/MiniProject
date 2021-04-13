@@ -43,7 +43,7 @@ include("dbconnect.php");
     if(isset($_POST['logout'])) //button if clicked
     {
         session_destroy();
-        header('location: http://localhost/login.php', true, 307);
+        header('location: http://localhost/CounsellingAssistant/login.php', true, 307);
     }
     if(isset($_POST['refresh'])){
         $qsql = "SELECT * FROM userdetails WHERE username='$user'";

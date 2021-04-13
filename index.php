@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Pop HTML5 Template</title>
+    <title>Counselling Assistant</title>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300">  <!-- Google web font "Open Sans" -->
     <link rel="stylesheet" href="css/bootstrap.min.css">                                  <!-- https://getbootstrap.com/ -->
@@ -30,7 +30,7 @@
     if(isset($_POST['logout'])) //button if clicked
     {
         session_destroy();
-        header('location: http://localhost/login.php', true, 307);
+        header('location: http://localhost/CounsellingAssistant/login.php', true, 307);
     }
 
 ?>
