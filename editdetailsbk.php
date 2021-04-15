@@ -22,13 +22,27 @@
 <?php
     
     include("dbconnect.php");
-    include("updatelocation.php");
     $con = Openconn();
     session_start();
-    // if(isset($_SESSION["user"]) &&  $_SESSION['loggedin'] == true)
-    // {
-    //     echo $_SESSION['user'];
-    // }
+    if(!isset($_SESSION['user'])) {
+
+        header('Location: login.php');
+    }
+
+    $editsql = "SELECT * from `userdetails` where username like '".$_SESSION['user']."'";
+    // echo $editsql;
+    if(!$qsql = mysqli_query($con, $editsql)) {
+        header('Location: dash.php');
+    } else {
+        $rs = mysqli_fetch_array($qsql);
+        $_SESSION['name'] = $rs['Name'];
+        $_SESSION['email'] = $rs['email'];
+        $_SESSION['seat'] =  $rs['Gender'];
+        $_SESSION['state'] = $rs['HomeState'];
+        $_SESSION['mains'] = $rs['MainsRank'];
+        $_SESSION['advance'] = $rs['AdvancedRank'];
+        $_SESSION['category'] = $rs['Category'];
+    }
     
     if(isset($_POST['enter'])) //button if clicked
     {
@@ -38,19 +52,11 @@
         // $hsos= $_POST['hsos'];
         $category=$_POST['category'];
         $state=$_POST['state'];
-        $city = $_POST['city'];
         $mair1= $_POST['mair1'];
         $aair1=$_POST['aair1'];
         $mair2=$_POST['mair2'];
         $aair2=$_POST['aair2'];
 
-        $latlan = getLatLan($city);
-        // echo $latlan[0];
-        // echo $latlan[1];
-
-        $query = "INSERT into latlan(username, city, lat, lon) values ('".$SESSION['user']."', '".$city."', ".$latlan[0].", ".$latlan[1].")";
-        // echo $query;
-        $temp = mysqli_query($con, $query);
         // echo $name;
         $user=$_SESSION['user'];
         // echo $user;
@@ -67,8 +73,8 @@
             {
                 $rs = mysqli_fetch_array($qsql);
                 $statenum=$rs[0];
-                $query = "INSERT INTO userdetails(username, Name, MainsRank, AdvancedRank, Gender, Category, email, HomeState, city)
-                VALUES ('$user','$name', '$mair1', '$aair1', '$stype', '$category', '$email1', '$statenum', '$city')";
+                $query = "INSERT INTO userdetails(username, Name, MainsRank, AdvancedRank, Gender, Category, email, HomeState)
+                VALUES ('$user','$name', '$mair1', '$aair1', '$stype', '$category', '$email1', $statenum)";
         
                 if(mysqli_query($con, $query))
                 {
@@ -102,31 +108,31 @@
                           <h2 id='heading' class="family">Preferences</h2><br>
                       
                           <label for="name"><div class="family">Name</div></label><br>
-                          <input type="text" placeholder="Enter Name" name="name" required>
+                          <input type="text" placeholder="Enter Name" name="name" value="<?php echo $_SESSION['name']; ?>" required>
                       <br><br>
                           <label for="email1"><div class="family">Email ID</div></label><br>
-                          <input type="email" placeholder="Enter Email" name="email1">
+                          <input type="email" placeholder="Enter Email" name="email1" value="<?php echo $_SESSION['email']; ?>">
                       <br><br>
                           <label for="stype"><div class="family">Seat Type</div></label><br>
                           <select name="stype">
-                        <option value="Female-only (including Supernumerary)">Female-only (including Supernumerary)</option>
-                        <option value="Gender-Neutral">Gender-Neutral</option>
+                        <option value="Female-only (including Supernumerary)" <?php if($_SESSION['seat']=="Female-only (including Supernumerary)") echo "selected" ?>>Female-only (including Supernumerary)</option>
+                        <option value="Gender-Neutral" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>Gender-Neutral</option>
                         </select>
                         
 
                         <br><br>
                         <label for="category"><div class="family">Category</div></label>
                         <select name="category">
-                        <option value="OPEN">OPEN</option>
-                        <option value="OBC-NCL">OBC-NCL</option>
-                        <option value="SC">SC</option>
-                        <option value="ST">ST</option>
-                        <option value="EWS">EWS</option>
-                        <option value="EWS (PwD)">EWS (PwD)</option>
-                        <option value="OPEN (PwD)">Open (PwD)</option>
-                        <option value="OBC-NCL (PwD)">OBC-NCL (PwD)</option>
-                        <option value="SC (PwD)">SC (PwD)</option>
-                        <option value="ST (PwD)">ST (PwD)</option>
+                        <option value="OPEN" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>OPEN</option>
+                        <option value="OBC-NCL" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>OBC-NCL</option>
+                        <option value="SC" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>SC</option>
+                        <option value="ST" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>ST</option>
+                        <option value="EWS" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>EWS</option>
+                        <option value="EWS (PwD)" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>EWS (PwD)</option>
+                        <option value="OPEN (PwD)" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>Open (PwD)</option>
+                        <option value="OBC-NCL (PwD)" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>OBC-NCL (PwD)</option>
+                        <option value="SC (PwD)" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>SC (PwD)</option>
+                        <option value="ST (PwD)" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>ST (PwD)</option>
                         </select>
                         <br><br>
 
@@ -173,9 +179,6 @@
                         </select>
 
                         <br><br>
-                        <label for="city"><div class="family">City</div></label><br>
-                        <input type="text" placeholder="Enter Your City" name="city" required>
-                        <br>
                         <label for="mair1"><div class="family">JEE Mains AIR (Paper 1)</div></label><br>
                         <input type="text" placeholder="Enter JEE Mains AIR" name="mair1" required>
                         <br>
@@ -243,3 +246,38 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+require_once('vendor/autoload.php');
+use SSD\DotEnv\DotEnv;
+use ZakClayton\Mapbox\MapboxApi;
+use ZakClayton\Mapbox\Exceptions\MapboxException;
+
+include("dbconnect.php");
+$con = Openconn();
+session_start();
+// $user = $_SESSION['user'];
+$user = "shubham";
+$mapboxToken = "pk.eyJ1IjoibWVsbGFyazIwMSIsImEiOiJja25oc2dtYjYwMG1mMnF1d3YwZngzcG02In0.09cFa_2aNnXnmpBVW9tRXg";
+$qry = "SELECT * from userdetails where username like '".$user."'";
+$temp = mysqli_query($con, $qry);
+$temp = mysqli_fetch_assoc($temp);
+$location = $temp['city'];
+$mapbox = new GeoCoding($mapboxToken);
+$geocodingApi = $mapbox->createGeoCodingApi($location);
+$json = $geoCodingApi->getJson();
+$entity = $geoCodingApi->call();
+echo $entity;
+?>

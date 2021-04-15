@@ -1,0 +1,5 @@
+{
+    "require": {
+        "zakclayton/php-mapbox": "^1.1"
+    }
+}

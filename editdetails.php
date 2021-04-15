@@ -25,10 +25,27 @@
     include("updatelocation.php");
     $con = Openconn();
     session_start();
-    // if(isset($_SESSION["user"]) &&  $_SESSION['loggedin'] == true)
-    // {
-    //     echo $_SESSION['user'];
-    // }
+    if(!isset($_SESSION['user'])) {
+
+        header('Location: login.php');
+    }
+
+    $editsql = "SELECT * from `userdetails` where username like '".$_SESSION['user']."'";
+    // echo $editsql;
+    if(!$qsql = mysqli_query($con, $editsql)) {
+        header('Location: dash.php');
+    } else {
+        $rs = mysqli_fetch_array($qsql);
+        $_SESSION['name'] = $rs['Name'];
+        $_SESSION['email'] = $rs['email'];
+        $_SESSION['seat'] =  $rs['Gender'];
+        $_SESSION['state'] = $rs['HomeState'];
+        $_SESSION['mains'] = $rs['MainsRank'];
+        $_SESSION['advance'] = $rs['AdvancedRank'];
+        $_SESSION['category'] = $rs['Category'];
+        $_SESSION['city'] = $rs['city'];
+        // echo $_SESSION['state'];
+    }
     
     if(isset($_POST['enter'])) //button if clicked
     {
@@ -37,23 +54,29 @@
         $stype=$_POST['stype'];
         // $hsos= $_POST['hsos'];
         $category=$_POST['category'];
-        $state=$_POST['state'];
         $city = $_POST['city'];
+        $state=$_POST['state'];
         $mair1= $_POST['mair1'];
         $aair1=$_POST['aair1'];
-        $mair2=$_POST['mair2'];
-        $aair2=$_POST['aair2'];
+        // $mair2=$_POST['mair2'];
+        // $aair2=$_POST['aair2'];
 
+        // echo $name;
+        $user=$_SESSION['user'];
         $latlan = getLatLan($city);
         // echo $latlan[0];
         // echo $latlan[1];
-
-        $query = "INSERT into latlan(username, city, lat, lon) values ('".$SESSION['user']."', '".$city."', ".$latlan[0].", ".$latlan[1].")";
+        $query = "SELECT * from latlan where username like '".$_SESSION['user']."'";
         // echo $query;
-        $temp = mysqli_query($con, $query);
-        // echo $name;
-        $user=$_SESSION['user'];
-        // echo $user;
+        $res = mysqli_query($con, $query);
+        if(mysqli_num_rows($res)==1) {
+            $query = "DELETE from latlan where username like '".$_SESSION['user']."'";
+            // echo $query.'<br>';
+            $res = mysqli_query($con, $query);
+        }
+        $query = "INSERT into latlan(username, city, lat, lon) values ('".$_SESSION['user']."', '".$city."', ".$latlan[0].", ".$latlan[1].")";
+        // echo $query;
+        $res = mysqli_query($con, $query);
 
         $query1 = "SELECT state_id from states WHERE Name='$state'";
 
@@ -67,8 +90,10 @@
             {
                 $rs = mysqli_fetch_array($qsql);
                 $statenum=$rs[0];
-                $query = "INSERT INTO userdetails(username, Name, MainsRank, AdvancedRank, Gender, Category, email, HomeState, city)
-                VALUES ('$user','$name', '$mair1', '$aair1', '$stype', '$category', '$email1', '$statenum', '$city')";
+                // $query = "INSERT INTO userdetails(username, Name, MainsRank, AdvancedRank, Gender, Category, email, HomeState)
+                // VALUES ('$user','$name', '$mair1', '$aair1', '$stype', '$category', '$email1', $statenum)";
+                $query = "UPDATE userdetails SET name='".$name."', city='".$city."', email='".$email1."', Gender='".$stype."', Category='".$category."', HomeState='".$statenum."', MainsRank='".$mair1."', AdvancedRank='".$aair1."' where username like '".$_SESSION['user']."'";
+                // echo $query;
         
                 if(mysqli_query($con, $query))
                 {
@@ -85,7 +110,6 @@
                 }
             }
         }
-
     }
 
 ?>
@@ -102,91 +126,64 @@
                           <h2 id='heading' class="family">Preferences</h2><br>
                       
                           <label for="name"><div class="family">Name</div></label><br>
-                          <input type="text" placeholder="Enter Name" name="name" required>
+                          <input type="text" placeholder="Enter Name" name="name" value="<?php echo $_SESSION['name']; ?>" required>
                       <br><br>
                           <label for="email1"><div class="family">Email ID</div></label><br>
-                          <input type="email" placeholder="Enter Email" name="email1">
+                          <input type="email" placeholder="Enter Email" name="email1" value="<?php echo $_SESSION['email']; ?>">
                       <br><br>
                           <label for="stype"><div class="family">Seat Type</div></label><br>
                           <select name="stype">
-                        <option value="Female-only (including Supernumerary)">Female-only (including Supernumerary)</option>
-                        <option value="Gender-Neutral">Gender-Neutral</option>
+                        <option value="Female-only (including Supernumerary)" <?php if($_SESSION['seat']=="Female-only (including Supernumerary)") echo "selected" ?>>Female-only (including Supernumerary)</option>
+                        <option value="Gender-Neutral" <?php if($_SESSION['seat']=="Gender-Neutral") echo "selected" ?>>Gender-Neutral</option>
                         </select>
                         
 
                         <br><br>
                         <label for="category"><div class="family">Category</div></label>
                         <select name="category">
-                        <option value="OPEN">OPEN</option>
-                        <option value="OBC-NCL">OBC-NCL</option>
-                        <option value="SC">SC</option>
-                        <option value="ST">ST</option>
-                        <option value="EWS">EWS</option>
-                        <option value="EWS (PwD)">EWS (PwD)</option>
-                        <option value="OPEN (PwD)">Open (PwD)</option>
-                        <option value="OBC-NCL (PwD)">OBC-NCL (PwD)</option>
-                        <option value="SC (PwD)">SC (PwD)</option>
-                        <option value="ST (PwD)">ST (PwD)</option>
+                        <?php
+                            $sql = "SELECT * from `seat_type`";
+                            $que = mysqli_query($con, $sql) or die(mysqli_error($con));
+                            while($row = mysqli_fetch_array($que)) {
+                                echo '<option value="'.$row['Name'].'"';
+                                if($row['Name']==$_SESSION['category'])
+                                    echo 'selected';
+                                echo '>'.$row['Name'].'</option>';
+                            }
+                        ?>
                         </select>
                         <br><br>
 
 
                         <label for="state"><div class="family">Home State/Union Territory</div></label>
                         <select name="state">
-                        <option value="Andhra Pradesh">Andhra Pradesh</option>
-                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                        <option value="Assam">Assam</option>
-                        <option value="Bihar">Bihar</option>
-                        <option value="Chhattisgarh">Chhattisgarh</option>
-                        <option value="Goa">Goa</option>
-                        <option value="Gujarat">Gujarat</option>
-                        <option value="Haryana">Haryana</option>
-                        <option value="Himachal Pradesh">Himachal Pradesh</option>
-                        <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                        <option value="Jharkhand">Jharkhand</option>
-                        <option value="Karnataka">Karnataka</option>
-                        <!-- ------------------------------------- -->
-                        <option value="Kerala">Kerala</option>
-                        <option value="Madhya Pradesh">Madhya Pradesh</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Manipur">Manipur</option>
-                        <option value="Meghalaya">Meghalaya</option>
-                        <option value="Mizoram">Mizoram</option>
-                        <option value="Nagaland">Nagaland</option>
-                        <option value="Odisha">Odisha</option>
-                        <option value="Punjab">Punjab</option>
-                        <option value="Rajasthan">Rajasthan</option>
-                        <option value="Sikkim">Sikkim</option>
-                        <option value="Tamil Nadu">Tamil Nadu</option>
-                        <option value="Telangana">Telangana</option>
-                        <option value="Tripura">Tripura</option>
-                        <option value="Uttar Pradesh">Uttar Pradesh</option>
-                        <option value="Uttarakhand">Uttarakhand</option>
-                        <option value="West Bengal">West Bengal</option>
-                        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-                        <option value="Chandigarh">Chandigarh</option>
-                        <option value="Dadra and Nagar Haveli">Dadra and Nagar Haveli</option>
-                        <option value="Daman and Diu">Daman and Diu</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Lakshadweep">Lakshadweep</option>
-                        <option value="Pondicherry">Pondicherry</option>
+                        <?php
+                            $sql = "SELECT * from `states`";
+                            $que = mysqli_query($con, $sql) or die(mysqli_error($con));
+                            while($row = mysqli_fetch_array($que)) {
+                                echo '<option value="'.$row['Name'].'"';
+                                if($row['state_id']==$_SESSION['state'])
+                                    echo 'selected';
+                                echo '>'.$row['Name'].'</option>';
+                            }
+                        ?>
                         </select>
 
                         <br><br>
                         <label for="city"><div class="family">City</div></label><br>
-                        <input type="text" placeholder="Enter Your City" name="city" required>
+                        <input type="text" placeholder="Enter Your City" name="city" value="<?php echo $_SESSION['city']; ?>" required>
                         <br>
                         <label for="mair1"><div class="family">JEE Mains AIR (Paper 1)</div></label><br>
-                        <input type="text" placeholder="Enter JEE Mains AIR" name="mair1" required>
+                        <input type="text" placeholder="Enter JEE Mains AIR" name="mair1" value="<?php echo $_SESSION['mains']; ?>" required>
                         <br>
                         <label for="aair1"><div class="family">JEE Advanced AIR (Paper 1)</div></label><br>
-                          <input type="text" placeholder="Enter JEE Advanced AIR" name="aair1">
+                          <input type="text" placeholder="Enter JEE Advanced AIR" value="<?php echo $_SESSION['advance']; ?>" name="aair1">
                           <br>
-                          <label for="mair2"><div class="family">JEE Mains AIR (Paper 2)</div></label><br>
+                          <!-- <label for="mair2"><div class="family">JEE Mains AIR (Paper 2)</div></label><br>
                         <input type="text" placeholder="Enter JEE Mains AIR" name="mair2">
                         <br>
                         <label for="aair2"><div class="family">JEE Advanced AIR (Paper 2)</div></label><br>
-                          <input type="text" placeholder="Enter JEE Advanced AIR" name="aair2">
+                          <input type="text" placeholder="Enter JEE Advanced AIR" name="aair2"> -->
 
                       <br>
                       

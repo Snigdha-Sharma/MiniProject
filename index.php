@@ -25,6 +25,7 @@
     $con = Openconn();
     session_start();
     $user = $_SESSION['user'];
+    // echo $_SESSION['dur'];
 
 
     if(isset($_POST['logout'])) //button if clicked
@@ -63,12 +64,24 @@
                         <div class="content">
                             
                             <div class="grid">
-                                <a href="dash.php">
+                            <a href="dash.php">
                                 <div class="grid__item" id="home-link">
                                     <div class="product">
                                         <div class="tm-nav-link">
                                             <i class="fas fa-home fa-3x tm-nav-icon"></i>
                                             <span class="tm-nav-text">Dashboard</span>
+                                            <div class="product__bg"></div>        
+                                        </div>                                    
+                                    </div>
+                                </div>
+                                </a>
+
+                                <a href="editdetails.php">
+                                <div class="grid__item" id="home-link">
+                                    <div class="product">
+                                        <div class="tm-nav-link">
+                                            <i class="fas fa-home fa-3x tm-nav-icon"></i>
+                                            <span class="tm-nav-text">Edit Details</span>
                                             <div class="product__bg"></div>        
                                         </div>                                    
                                     </div>
