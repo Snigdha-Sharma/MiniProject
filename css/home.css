@@ -27,7 +27,7 @@
 }
 header {
   background-image:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url("login.jpg");
-  background position: fixed;
+  background-position: fixed;
   height: 200vh;
     background-size: cover;
     background-position: center;

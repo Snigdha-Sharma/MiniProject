@@ -24,6 +24,10 @@
     include("dbconnect.php");
     $con = Openconn();
     session_start();
+
+    if(!isset($_SESSION['user']))
+        header('location: login.php', true, 307);
+
     if(isset($_POST['submit']))
     {
         // $ch = $_POST['dur'];
@@ -33,64 +37,47 @@
         $_SESSION['chk3']=isset($_POST['chk3']) ? 1 : 0;
         $_SESSION['chk4']=isset($_POST['chk4']) ? 1 : 0;
         $_SESSION['chk5']=isset($_POST['chk5']) ? 1 : 0;
-
         $_SESSION['dur']=$_POST['dur'];
-
         $_SESSION['region1']=($_POST['region1']);
         $_SESSION['region2']=($_POST['region2']);
         $_SESSION['region3']=($_POST['region3']);
         $_SESSION['region4']=($_POST['region4']);
         $_SESSION['region5']=($_POST['region5']);
         $_SESSION['region6']=($_POST['region6']);
-
         $_SESSION['br1']=($_POST['br1']);
         $_SESSION['br2']=($_POST['br2']);
         $_SESSION['br3']=($_POST['br3']);
         $_SESSION['br4']=($_POST['br4']);
         $_SESSION['br5']=($_POST['br5']);
 
-        // $_SESSION['ov1']=isset($_POST['ov1']) ? 1 : 0;
-        // $_SESSION['ov2']=isset($_POST['ov2']) ? 1 : 0;
-        // $_SESSION['ov3']=isset($_POST['ov3']) ? 1 : 0;
-        // $_SESSION['ov4']=isset($_POST['ov4']) ? 1 : 0;
-        // $_SESSION['ov5']=isset($_POST['ov5']) ? 1 : 0;
-        // $_SESSION['ov6']=isset($_POST['ov6']) ? 1 : 0;
-        // echo $_SESSION['chk12'];
-        // echo $_SESSION['chk1'];
-        // echo $check_value;
-
-        // $qsql = "INSERT INTO trial(chk1, duration) VALUES ('$check_value', '$ch')";
-        // if(mysqli_query($con, $qsql))
-        //   {
-        //         // echo $psw;
-        //         // session_destroy();
+        $qry = "SELECT * from choicefilling where username like '".$_SESSION['user']."'";
+        if(!$result = mysqli_query($con, $qry)) {
+            echo mysqli_error($con);
+        } else {
+            if(mysqli_num_rows($result)==1)
+                $query = "DELETE from choicefilling where username like '".$_SESSION['user']."'";
+            echo $query;
+            $temp = mysqli_query($con, $query);
+            $query = "INSERT into choicefilling values('".$_SESSION['user']."', '".$_SESSION['chk1']."', '".$_SESSION['chk2']."', '".$_SESSION['chk3']."', '".$_SESSION['chk4']."', '".$_SESSION['chk5']."', '".$_SESSION['dur']."', '".$_SESSION['region1']."', '".$_SESSION['region2']."', '".$_SESSION['region3']."', '".$_SESSION['region4']."', '".$_SESSION['region5']."', '".$_SESSION['region6']."', '".$_SESSION['br1']."', '".$_SESSION['br2']."', '".$_SESSION['br3']."', '".$_SESSION['br4']."', '".$_SESSION['br5']."')";
+            echo $query;
+            if(mysqli_query($con, $query))
+            {
                 header('location: http://localhost/CounsellingAssistant/index.php', true, 307);
-        //         exit();
-        //     }
-        //     else
-        //     {
-        //         header('location: http://localhost/index.php', true, 307);
-        //         // echo "error in entering user details";
-        //         exit();
-        //     }
+                exit();
+            }
+            else
+            {
+                header('location: http://localhost/CounsellingAssistant/choicefill.php', true, 307);
+            }
+        }
+
+        // header('location: index.php', true, 307);
     }
-// $result=null;
-    // if(isset($_POST['branch']))
-    // {
-        // $sql = "SELECT * FROM branches";
-        // $result = mysqli_query($con, $sql);
-        // echo $result;
-        // if(!$result) echo "aaaaaaaaaaa";
         if ($con->connect_error) {
             die('Connect Error (' .
             $con->connect_errno . ') '.
             $con->connect_error);
         }
-        
-
-    // }
-    // error_reporting(0);
-    // ini_set('display_errors', 0);
 ?>
 
 
@@ -99,32 +86,31 @@
                     <form method="post" action='#'>
                     <button  name="aaa" class="btn logout"><a href="index.php" class="white">Go back to home page</a></button><br>
                         <div class="container">
-                        <!-- <button type="submit" name="branch" class="submit">Show Branch and Region numbers:</button> -->
                           <h2 id='heading' class="family">Questionnaire for Applicant Priorities</h2><br>
                       
                         <label class="container">
                             <h5>Do you strictly prefer institutes from your own region?</h5>
-                            <input type="checkbox" class='container1' name="chk1">
+                            <input type="checkbox" class='container1' name="chk1" <?php if($_SESSION['chk1']==1) echo "checked" ?>>
                             <span class="checkmark"></span>
                         </label>
                         <label class="container">
                             <h5>Do you strictly prefer institutes from your own state?</h5>
-                            <input type="checkbox" class='container1' name="chk2">
+                            <input type="checkbox" class='container1' name="chk2" <?php if($_SESSION['chk2']==1) echo "checked" ?>>
                             <span class="checkmark"></span>
                         </label>
                         <label class="container">
                             <h5> If the college is one of the IIT’s this is more important than branch preference - True or False, tick for true.</h5>
-                            <input type="checkbox" class='container1' name="chk3">
+                            <input type="checkbox" class='container1' name="chk3" <?php if($_SESSION['chk3']==1) echo "checked" ?>>
                             <span class="checkmark"></span>
                         </label>
                         <label class="container">
                             <h5> If the college is one of the NIT’s this is more important than branch preference - True or False, tick for true.</h5>
-                            <input type="checkbox" class='container1' name="chk4">
+                            <input type="checkbox" class='container1' name="chk4" <?php if($_SESSION['chk4']==1) echo "checked" ?>>
                             <span class="checkmark"></span>
                         </label>
                         <label class="container">
                             <h5> If the college is one of the IIIT’s this is more important than branch preference - True or False, tick for true.</h5>
-                            <input type="checkbox" class='container1' name="chk5">
+                            <input type="checkbox" class='container1' name="chk5" <?php if($_SESSION['chk5']==1) echo "checked" ?>>
                             <span class="checkmark"></span>
                         </label>
                         <!-- <label class="container">
@@ -146,9 +132,9 @@
 
                         <label for="dur">Preferred duration?</label><br>
                         <select name="dur">
-                            <option value="Fouryears">Fouryears</option>
-                            <option value="Fiveyears">Fiveyears</option>
-                            <option value="Any">Any</option>
+                            <option value="Fouryears" <?php if($_SESSION['dur']=="Fouryears") echo "selected" ?>>Fouryears</option>
+                            <option value="Fiveyears" <?php if($_SESSION['dur']=="Fiveyears") echo "selected" ?>>Fiveyears</option>
+                            <option value="Any" <?php if($_SESSION['dur']=="Any") echo "selected" ?>>Any</option>
                         </select>                            
                         <br><br>
 
@@ -163,22 +149,22 @@
 
                         <p>Number the given regions from 1-6 according to your priority with 6 being the highest and 1 the lowest:</p>
 
-                        <input type="number" id="region" name="region1" min="1" max="6">
+                        <input type="number" id="region" name="region1" min="1" max="6" value="<?php echo $_SESSION['region1']; ?>">
                         <label for="region">North India</label>
                         <br>
-                        <input type="number" id="region" name="region2" min="1" max="6">
+                        <input type="number" id="region" name="region2" min="1" max="6" value="<?php echo $_SESSION['region2']; ?>">
                         <label for="region">South India</label>
                         <br>
-                        <input type="number" id="region" name="region3" min="1" max="6">
+                        <input type="number" id="region" name="region3" min="1" max="6" value="<?php echo $_SESSION['region3']; ?>">
                         <label for="region">East India</label>
                         <br>
-                        <input type="number" id="region" name="region4" min="1" max="6">
+                        <input type="number" id="region" name="region4" min="1" max="6" value="<?php echo $_SESSION['region4']; ?>">
                         <label for="region">West India</label>
                         <br>
-                        <input type="number" id="region" name="region5" min="1" max="6">
+                        <input type="number" id="region" name="region5" min="1" max="6" value="<?php echo $_SESSION['region5']; ?>">
                         <label for="region">Central India</label>
                         <br>
-                        <input type="number" id="region" name="region6" min="1" max="6">
+                        <input type="number" id="region" name="region6" min="1" max="6" value="<?php echo $_SESSION['region6']; ?>">
                         <label for="region">North East India</label>
                         <br>
                         <br>
@@ -188,19 +174,19 @@
                         
                         <!-- <form method="POST"></form>
                         <br><br> -->
-                        <input type="number" id="region" name="br1" min="1" max="25">
+                        <input type="number" id="region" name="br1" min="1" max="25" value="<?php echo $_SESSION['br1']; ?>">
                         <label for="region">Pref 1</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         
-                        <input type="number" id="region" name="br2" min="1" max="25">
+                        <input type="number" id="region" name="br2" min="1" max="25" value="<?php echo $_SESSION['br2']; ?>">
                         <label for="region">Pref 2</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         
-                        <input type="number" id="region" name="br3" min="1" max="25">
+                        <input type="number" id="region" name="br3" min="1" max="25" value="<?php echo $_SESSION['br3']; ?>">
                         <label for="region">Pref 3</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         
-                        <input type="number" id="region" name="br4" min="1" max="25">
+                        <input type="number" id="region" name="br4" min="1" max="25" value="<?php echo $_SESSION['br4']; ?>">
                         <label for="region">Pref 4</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         
-                        <input type="number" id="region" name="br5" min="1" max="25">
+                        <input type="number" id="region" name="br5" min="1" max="25" value="<?php echo $_SESSION['br5']; ?>">
                         <label for="region">Pref 5</label>
                         <br>
 

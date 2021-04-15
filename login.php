@@ -54,9 +54,47 @@ if(isset($_POST["submit"]))
             {
                 $_SESSION["user"] = $rs['Username'];
                 $_SESSION['loggedin'] = true;			
-			    $_SESSION["password"] = $rs['Password'];			
-			    //$_SESSION["user_type"] = $rs[type];
-			    //echo $_SESSION["user"];
+			    $_SESSION["password"] = $rs['Password'];	
+                $query = "SELECT * from choicefilling where username like '".$_SESSION['user']."'";
+                $res = mysqli_query($con, $query);
+                if(mysqli_num_rows($res)==1) {
+                    $row = mysqli_fetch_array($res);
+                    $_SESSION['chk1']=$row[1];
+                    $_SESSION['chk2']=$row[2];
+                    $_SESSION['chk3']=$row[3];
+                    $_SESSION['chk4']=$row[4];
+                    $_SESSION['chk5']=$row[5];
+                    $_SESSION['dur']=$row[6];
+                    $_SESSION['region1']=$row[7];
+                    $_SESSION['region2']=$row[8];
+                    $_SESSION['region3']=$row[9];
+                    $_SESSION['region4']=$row[10];
+                    $_SESSION['region5']=$row[11];
+                    $_SESSION['region6']=$row[12];
+                    $_SESSION['br1']=$row[13];
+                    $_SESSION['br2']=$row[14];
+                    $_SESSION['br3']=$row[15];
+                    $_SESSION['br4']=$row[16];
+                    $_SESSION['br5']=$row[17];
+                } else {
+                    $_SESSION['chk1']="";
+                    $_SESSION['chk2']="";
+                    $_SESSION['chk3']="";
+                    $_SESSION['chk4']="";
+                    $_SESSION['chk5']="";
+                    $_SESSION['dur']="";
+                    $_SESSION['region1']="";
+                    $_SESSION['region2']="";
+                    $_SESSION['region3']="";
+                    $_SESSION['region4']="";
+                    $_SESSION['region5']="";
+                    $_SESSION['region6']="";
+                    $_SESSION['br1']="";
+                    $_SESSION['br2']="";
+                    $_SESSION['br3']="";
+                    $_SESSION['br4']="";
+                    $_SESSION['br5']="";
+                }
 			    header('Location: index.php', true, 307);
             }
             else 
