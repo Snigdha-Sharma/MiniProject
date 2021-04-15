@@ -36,12 +36,24 @@ function getLatLan($location) {
     return $array;
 }
 
-function distCalc($lat1, $lon1, $lat2, $lon2) {
-    $base = 0.017453292519943295; //Math.PI/180
-    $temp2 = 0.5;
-
+function getDistanceBetweenPointsNew($latitude1, $longitude1, $latitude2, $longitude2, $unit = 'miles') {
+    $theta = $longitude1 - $longitude2; 
+    $distance = (sin(deg2rad($latitude1)) * sin(deg2rad($latitude2))) + (cos(deg2rad($latitude1)) * cos(deg2rad($latitude2)) * cos(deg2rad($theta))); 
+    $distance = acos($distance); 
+    $distance = rad2deg($distance); 
+    $distance = $distance * 60 * 1.1515; 
+    switch($unit) { 
+      case 'miles': 
+        break; 
+      case 'kilometers' : 
+        $distance = $distance * 1.609344; 
+    } 
+    return (round($distance,2)); 
 }
 
+
+
+//reference : https://martech.zone/calculate-great-circle-distance/#:~:text=The%20query%20for%20retrieving%20all,180))%20%2B%20cos((%22.
 ?>
 
 
