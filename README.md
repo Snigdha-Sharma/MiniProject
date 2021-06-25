@@ -44,7 +44,7 @@ This project was made as a part of the hackathon of IIIT Allahabad, 'SheHacks 4.
 1. Implement a chatbot system on the website to take in additional demands from the applicants and provide help.
 2. Use a google maps API to accurately give information of the time taken for travelling and distance of institute from applicant's home.
 3. Make the recommended list customizable by the user so that the user can make his own changes if he wishes to.
-4. Improve UI and design.
+4. Improve UI and design for better User experience.
 5. Implement web scraping to get the whole data for better prediction.
 
 ***Video has also been added in the files section for website demo***
